@@ -1,0 +1,155 @@
+#include <stdio.h>
+#include <string.h>
+
+#define TAM 8
+
+// Protótipos das funções
+void inicializarTabuleiro(char tabuleiro[TAM][TAM][4]);
+void mostrarTabuleiro(char tabuleiro[TAM][TAM][4]);
+void moverPeca(char tabuleiro[TAM][TAM][4], int li, int ci, int lf, int cf, char nomePeca[]);
+void exibirJogada(int num, char jogador[], char peca[], char origem[], char destino[]);
+void converterPosicao(int linha, int coluna, char pos[]);
+
+// Função principal
+int main() {
+    char tabuleiro[TAM][TAM][4];
+
+    char origem[3], destino[3];
+
+    inicializarTabuleiro(tabuleiro);
+
+    printf("\n=== POSICAO INICIAL ===\n");
+    mostrarTabuleiro(tabuleiro);
+
+    // ================= JOGADA 1 =================
+    printf("\n=== JOGADA 1 ===\n");
+
+    converterPosicao(6, 4, origem);
+    converterPosicao(4, 4, destino);
+    exibirJogada(1, "BRANCAS", "Peao", origem, destino);
+    moverPeca(tabuleiro, 6, 4, 4, 4, "PB");
+
+    converterPosicao(1, 4, origem);
+    converterPosicao(3, 4, destino);
+    exibirJogada(1, "PRETAS", "Peao", origem, destino);
+    moverPeca(tabuleiro, 1, 4, 3, 4, "PP");
+
+    mostrarTabuleiro(tabuleiro);
+
+    // ================= JOGADA 2 =================
+    printf("\n=== JOGADA 2 ===\n");
+
+    converterPosicao(7, 5, origem);
+    converterPosicao(4, 2, destino);
+    exibirJogada(2, "BRANCAS", "Bispo", origem, destino);
+    moverPeca(tabuleiro, 7, 5, 4, 2, "BB");
+
+    converterPosicao(0, 1, origem);
+    converterPosicao(2, 2, destino);
+    exibirJogada(2, "PRETAS", "Cavalo", origem, destino);
+    moverPeca(tabuleiro, 0, 1, 2, 2, "CP");
+
+    mostrarTabuleiro(tabuleiro);
+
+    // ================= JOGADA 3 =================
+    printf("\n=== JOGADA 3 ===\n");
+
+    converterPosicao(7, 3, origem);
+    converterPosicao(3, 7, destino);
+    exibirJogada(3, "BRANCAS", "Dama", origem, destino);
+    moverPeca(tabuleiro, 7, 3, 3, 7, "DB");
+
+    converterPosicao(0, 6, origem);
+    converterPosicao(2, 5, destino);
+    exibirJogada(3, "PRETAS", "Cavalo", origem, destino);
+    moverPeca(tabuleiro, 0, 6, 2, 5, "CP");
+
+    mostrarTabuleiro(tabuleiro);
+
+    // ================= JOGADA 4 =================
+    printf("\n=== JOGADA 4 (XEQUE MATE) ===\n");
+
+    converterPosicao(3, 7, origem);
+    converterPosicao(1, 5, destino);
+    exibirJogada(4, "BRANCAS", "Dama", origem, destino);
+    moverPeca(tabuleiro, 3, 7, 1, 5, "DB");
+
+    mostrarTabuleiro(tabuleiro);
+
+    return 0;
+}
+
+// Inicializa o tabuleiro
+void inicializarTabuleiro(char tabuleiro[TAM][TAM][4]) {
+
+    int i, j;
+
+    for(i = 0; i < TAM; i++) {
+        for(j = 0; j < TAM; j++) {
+            strcpy(tabuleiro[i][j], "---");
+        }
+    }
+
+    // Pretas
+    strcpy(tabuleiro[0][0], "TP");
+    strcpy(tabuleiro[0][1], "CP");
+    strcpy(tabuleiro[0][2], "BP");
+    strcpy(tabuleiro[0][3], "DP");
+    strcpy(tabuleiro[0][4], "RP");
+    strcpy(tabuleiro[0][5], "BP");
+    strcpy(tabuleiro[0][6], "CP");
+    strcpy(tabuleiro[0][7], "TP");
+
+    for(j = 0; j < TAM; j++) {
+        strcpy(tabuleiro[1][j], "PP");
+    }
+
+    // Brancas
+    strcpy(tabuleiro[7][0], "TB");
+    strcpy(tabuleiro[7][1], "CB");
+    strcpy(tabuleiro[7][2], "BB");
+    strcpy(tabuleiro[7][3], "DB");
+    strcpy(tabuleiro[7][4], "RB");
+    strcpy(tabuleiro[7][5], "BB");
+    strcpy(tabuleiro[7][6], "CB");
+    strcpy(tabuleiro[7][7], "TB");
+
+    for(j = 0; j < TAM; j++) {
+        strcpy(tabuleiro[6][j], "PB");
+    }
+}
+
+// Mostrar tabuleiro com numeração
+void mostrarTabuleiro(char tabuleiro[TAM][TAM][4]) {
+    int i, j;
+
+    printf("\n    1   2   3   4   5   6   7   8\n");
+
+    for(i = 0; i < TAM; i++) {
+        printf("%d ", 8 - i);
+        for(j = 0; j < TAM; j++) {
+            printf("%3s ", tabuleiro[i][j]);
+        }
+        printf(" %d\n", 8 - i);
+    }
+
+    printf("    1   2   3   4   5   6   7   8\n");
+}
+
+// Move a peça
+void moverPeca(char tabuleiro[TAM][TAM][4], int li, int ci, int lf, int cf, char nomePeca[]) {
+    strcpy(tabuleiro[li][ci], "...");
+    strcpy(tabuleiro[lf][cf], nomePeca);
+}
+
+// Exibir jogada formatada
+void exibirJogada(int num, char jogador[], char peca[], char origem[], char destino[]) {
+    printf("Jogada %d - %s: %s de %s para %s\n", num, jogador, peca, origem, destino);
+}
+
+// Converter posição (matriz → xadrez)
+void converterPosicao(int linha, int coluna, char pos[]) {
+    pos[0] = 'a' + coluna;
+    pos[1] = '8' - linha;
+    pos[2] = '\0';
+}
