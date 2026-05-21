@@ -1,0 +1,477 @@
+/*-------------------------------------------------------------*
+*  FATEC Ipiranga                                              *
+*  Disciplina: Programaçao Estruturada e Modular               *
+*           Prof. Veríssimo                                    *
+* -------------------------------------------------------------*
+*  Objetivo do Programa:consolidar o domínio de ponteiros em C *
+*  Data - 14/05/2026                                           * 
+*  Autor: Leandro Lima Medeiros ; 2040482522013                *
+* -------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <string.h>
+#include <stddef.h>
+
+/* =========================================================
+ * SECAO 01 — Conceito e Definicao de Ponteiros
+ * ========================================================= */
+
+/*
+ * Exercicio 01 — Endereco na Memoria
+ * Declarar variaveis int, float e char, criar ponteiros para cada
+ * e imprimir: valor, endereco da variavel, endereco no ponteiro e
+ * valor obtido via ponteiro.
+ */
+void exercicio01(void) {
+    printf("=== Exercicio 01: Endereco na Memoria ===\n");
+
+    int   vi = 42;
+    float vf = 3.14f;
+    char  vc = 'Z';
+
+    int   *pi = &vi;
+    float *pf = &vf;
+    char  *pc = &vc;
+
+    printf("\n[int]\n");
+    printf("  Valor da variavel     : %d\n",   vi);
+    printf("  Endereco da variavel  : %p\n",   (void *)&vi);
+    printf("  Endereco no ponteiro  : %p\n",   (void *)pi);
+    printf("  Valor via ponteiro    : %d\n",   *pi);
+
+    printf("\n[float]\n");
+    printf("  Valor da variavel     : %.2f\n", vf);
+    printf("  Endereco da variavel  : %p\n",   (void *)&vf);
+    printf("  Endereco no ponteiro  : %p\n",   (void *)pf);
+    printf("  Valor via ponteiro    : %.2f\n", *pf);
+
+    printf("\n[char]\n");
+    printf("  Valor da variavel     : %c\n",   vc);
+    printf("  Endereco da variavel  : %p\n",   (void *)&vc);
+    printf("  Endereco no ponteiro  : %p\n",   (void *)pc);
+    printf("  Valor via ponteiro    : %c\n",   *pc);
+
+    printf("\n");
+}
+
+/*
+ * Exercicio 02 — Tamanho de um Ponteiro
+ *
+ * O tamanho de um ponteiro NAO varia com o tipo apontado.
+ * Em arquiteturas de 32 bits, todos os ponteiros ocupam 4 bytes.
+ * Em arquiteturas de 64 bits, ocupam 8 bytes.
+ * O tipo do ponteiro apenas informa ao compilador QUANTOS bytes
+ * ler/escrever ao desreferenciar, mas o ponteiro em si guarda
+ * apenas um endereco, cujo tamanho e fixo pela arquitetura.
+ */
+void exercicio02(void) {
+    printf("=== Exercicio 02: Tamanho de um Ponteiro ===\n");
+
+    printf("  sizeof(int *)    = %zu bytes\n", sizeof(int *));
+    printf("  sizeof(float *)  = %zu bytes\n", sizeof(float *));
+    printf("  sizeof(double *) = %zu bytes\n", sizeof(double *));
+    printf("  sizeof(char *)   = %zu bytes\n", sizeof(char *));
+
+    /*
+     * Conclusao: todos os ponteiros acima possuem o mesmo tamanho.
+     * O tamanho NAO depende do tipo apontado — depende apenas da
+     * arquitetura (32 ou 64 bits) do sistema em que o codigo roda.
+     */
+
+    printf("\n");
+}
+
+/* =========================================================
+ * SECAO 02 — Operador de Referencia (&)
+ * ========================================================= */
+
+/*
+ * Exercicio 03 — Troca de Valores via Referencia
+ * Funcao trocar recebe ponteiros e permuta os valores originais.
+ */
+void trocar(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void exercicio03(void) {
+    printf("=== Exercicio 03: Troca de Valores via Referencia ===\n");
+
+    int x = 10, y = 20;
+    printf("  Antes : x = %d, y = %d\n", x, y);
+    trocar(&x, &y);
+    printf("  Depois: x = %d, y = %d\n", x, y);
+    printf("\n");
+}
+
+/*
+ * Exercicio 04 — Mapa de Enderecos de um Struct
+ */
+struct Aluno {
+    char nome[50];
+    int  matricula;
+    float media;
+};
+
+void exercicio04(void) {
+    printf("=== Exercicio 04: Mapa de Enderecos de um Struct ===\n");
+
+    struct Aluno a;
+    strcpy(a.nome, "Maria Silva");
+    a.matricula = 20261001;
+    a.media = 8.5f;
+
+    printf("  Endereco de a          : %p\n", (void *)&a);
+    printf("  Endereco de a.nome     : %p\n", (void *)&a.nome);
+    printf("  Endereco de a.matricula: %p\n", (void *)&a.matricula);
+    printf("  Endereco de a.media    : %p\n", (void *)&a.media);
+
+    /*
+     * Os campos de um struct sao alocados em ordem de declaracao,
+     * em posicoes consecutivas na memoria. Porem, o compilador pode
+     * inserir PADDING (bytes de alinhamento) entre campos para que
+     * cada campo fique alinhado ao seu tamanho natural.
+     * Por exemplo, apos o array 'nome[50]', o compilador pode
+     * adicionar 2 bytes de padding antes de 'matricula' (int de 4 bytes)
+     * para garanti-lo alinhado a multiplos de 4.
+     * Por isso os enderecos sao "quase" consecutivos, mas podem ter
+     * pequenos gaps de alinhamento entre eles.
+     */
+
+    printf("\n");
+}
+
+/* =========================================================
+ * SECAO 03 — Operador de Desreferenciacao (*)
+ * ========================================================= */
+
+/*
+ * Exercicio 05 — Modificacao Indireta
+ * Multiplica cada elemento de um vetor por 2 usando apenas *.
+ */
+void exercicio05(void) {
+    printf("=== Exercicio 05: Modificacao Indireta ===\n");
+
+    int v[5] = {3, 7, 2, 9, 5};
+    int *p = v;
+    int i;
+
+    printf("  Antes : ");
+    for (i = 0; i < 5; i++) {
+        printf("%d ", *(p + i));
+    }
+    printf("\n");
+
+    for (i = 0; i < 5; i++) {
+        *(p + i) *= 2;
+    }
+
+    printf("  Depois: ");
+    for (i = 0; i < 5; i++) {
+        printf("%d ", *(p + i));
+    }
+    printf("\n\n");
+}
+
+/*
+ * Exercicio 06 — Leitura e Escrita de Struct via Ponteiro
+ */
+struct Produto {
+    char  nome[40];
+    float preco;
+    int   estoque;
+};
+
+void exercicio06(void) {
+    printf("=== Exercicio 06: Struct via Ponteiro (* e ->) ===\n");
+
+    struct Produto prod;
+    struct Produto *pp = &prod;
+
+    /* Preenchimento usando * e . (desreferenciacao explicita) */
+    strcpy((*pp).nome, "Teclado Mecanico");
+    (*pp).preco   = 349.90f;
+    (*pp).estoque = 15;
+
+    printf("  [usando (*pp).campo]\n");
+    printf("  Nome   : %s\n",  (*pp).nome);
+    printf("  Preco  : %.2f\n", (*pp).preco);
+    printf("  Estoque: %d\n",  (*pp).estoque);
+
+    /* Preenchimento usando -> (acesso indireto direto) */
+    strcpy(pp->nome, "Mouse Sem Fio");
+    pp->preco   = 129.50f;
+    pp->estoque = 30;
+
+    printf("\n  [usando pp->campo]\n");
+    printf("  Nome   : %s\n",  pp->nome);
+    printf("  Preco  : %.2f\n", pp->preco);
+    printf("  Estoque: %d\n",  pp->estoque);
+
+    /*
+     * (*pp).campo e pp->campo sao exatamente equivalentes.
+     * O operador -> e apenas uma notacao mais concisa e legivel
+     * para desreferenciar um ponteiro e acessar um campo de uma
+     * vez so. O compilador gera o mesmo codigo para ambas as formas.
+     */
+
+    printf("\n");
+}
+
+/* =========================================================
+ * SECAO 04 — Aritmetica de Ponteiros
+ * ========================================================= */
+
+/*
+ * Exercicio 07 — Percurso com Incremento
+ * Soma, media, maior e menor de array de 8 inteiros via aritmetica.
+ */
+void exercicio07(void) {
+    printf("=== Exercicio 07: Percurso com Incremento ===\n");
+
+    int arr[8] = {14, 3, 27, 8, 51, 6, 19, 42};
+    int *p = arr;
+    int *fim = arr + 8;
+
+    int soma  = 0;
+    int maior = *p;
+    int menor = *p;
+
+    printf("  Enderecos e valores:\n");
+    while (p < fim) {
+        printf("    [%p] = %d\n", (void *)p, *p);
+        soma += *p;
+        if (*p > maior) maior = *p;
+        if (*p < menor) menor = *p;
+        p++;
+    }
+
+    printf("  Soma  : %d\n",   soma);
+    printf("  Media : %.2f\n", (float)soma / 8);
+    printf("  Maior : %d\n",   maior);
+    printf("  Menor : %d\n",   menor);
+    printf("\n");
+}
+
+/*
+ * Exercicio 08 — Distancia entre Ponteiros
+ */
+void exercicio08(void) {
+    printf("=== Exercicio 08: Distancia entre Ponteiros ===\n");
+
+    double arr[10] = {1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.0};
+
+    double *p3 = arr + 2;   /* 3o elemento (indice 2) */
+    double *p8 = arr + 7;   /* 8o elemento (indice 7) */
+
+    ptrdiff_t dist = p8 - p3;
+
+    printf("  Ponteiro p3 (3o elem): %p -> %.1f\n", (void *)p3, *p3);
+    printf("  Ponteiro p8 (8o elem): %p -> %.1f\n", (void *)p8, *p8);
+    printf("  Diferenca: %td elementos\n", dist);
+
+    /*
+     * Como o compilador calcula p8 - p3:
+     * Ele subtrai os enderecos numericos e divide pelo sizeof(double).
+     * Resultado = (endereco_p8 - endereco_p3) / sizeof(double)
+     * Isso retorna o NUMERO DE ELEMENTOS entre os dois ponteiros,
+     * nao o numero de bytes. Aqui: (indice 7) - (indice 2) = 5.
+     */
+
+    printf("\n  Elementos no intervalo [p3, p8]:\n    ");
+    double *p = p3;
+    while (p <= p8) {
+        printf("%.1f ", *p);
+        p++;
+    }
+    printf("\n\n");
+}
+
+/* =========================================================
+ * SECAO 05 — Ponteiros com Arrays
+ * ========================================================= */
+
+/*
+ * Exercicio 09 — Inversao de Array com Ponteiros
+ */
+void inverter(int *arr, int n) {
+    int *inicio = arr;
+    int *fim    = arr + n - 1;
+    int temp;
+
+    while (inicio < fim) {
+        temp    = *inicio;
+        *inicio = *fim;
+        *fim    = temp;
+        inicio++;
+        fim--;
+    }
+}
+
+void exercicio09(void) {
+    printf("=== Exercicio 09: Inversao de Array com Ponteiros ===\n");
+
+    int v[7] = {10, 20, 30, 40, 50, 60, 70};
+    int *p = v;
+    int i;
+
+    printf("  Antes : ");
+    for (i = 0; i < 7; i++) printf("%d ", *(p + i));
+    printf("\n");
+
+    inverter(v, 7);
+
+    printf("  Depois: ");
+    for (i = 0; i < 7; i++) printf("%d ", *(p + i));
+    printf("\n\n");
+}
+
+/*
+ * Exercicio 10 — Busca em Matriz com Ponteiro
+ * Percorre matriz 4x4 como array linear usando um unico ponteiro.
+ */
+void exercicio10(void) {
+    printf("=== Exercicio 10: Busca em Matriz com Ponteiro ===\n");
+
+    int mat[4][4] = {
+        { 3, 17,  2, 99},
+        {45,  8, 71, 12},
+        {33, 56,  4, 88},
+        {22, 11, 67, 15}
+    };
+
+    int *p   = &mat[0][0];
+    int total = 4 * 4;
+    int maior = *p;
+    int idx   = 0;
+    int i;
+
+    for (i = 0; i < total; i++) {
+        if (*(p + i) > maior) {
+            maior = *(p + i);
+            idx   = i;
+        }
+    }
+
+    int linha  = idx / 4;
+    int coluna = idx % 4;
+
+    printf("  Maior valor: %d\n", maior);
+    printf("  Posicao    : linha %d, coluna %d\n", linha, coluna);
+    printf("\n");
+}
+
+/* =========================================================
+ * SECAO 06 — Passagem de Ponteiros em Funcoes
+ * ========================================================= */
+
+/*
+ * Exercicio 11 — Funcao com Multiplos Retornos
+ */
+void estatisticas(int *v, int n, int *soma, float *media, int *maior, int *menor) {
+    int *p   = v;
+    int *fim = v + n;
+
+    *soma  = 0;
+    *maior = *p;
+    *menor = *p;
+
+    while (p < fim) {
+        *soma += *p;
+        if (*p > *maior) *maior = *p;
+        if (*p < *menor) *menor = *p;
+        p++;
+    }
+
+    *media = (float)*soma / n;
+}
+
+void exercicio11(void) {
+    printf("=== Exercicio 11: Funcao com Multiplos Retornos ===\n");
+
+    int arr[6] = {12, 45, 7, 30, 18, 55};
+    int soma, maior, menor;
+    float media;
+
+    estatisticas(arr, 6, &soma, &media, &maior, &menor);
+
+    printf("  Array : 12 45 7 30 18 55\n");
+    printf("  Soma  : %d\n",   soma);
+    printf("  Media : %.2f\n", media);
+    printf("  Maior : %d\n",   maior);
+    printf("  Menor : %d\n",   menor);
+    printf("\n");
+}
+
+/*
+ * Exercicio 12 — Ordenacao por Selecao com Ponteiros (Selection Sort)
+ * Usa exclusivamente aritmetica de ponteiros (sem []).
+ */
+void selectionSort(int *arr, int n) {
+    int *i, *j, *min_ptr;
+
+    for (i = arr; i < arr + n - 1; i++) {
+        min_ptr = i;
+
+        for (j = i + 1; j < arr + n; j++) {
+            if (*j < *min_ptr) {
+                min_ptr = j;
+            }
+        }
+
+        if (min_ptr != i) {
+            printf("    Trocando %d <-> %d: ", *i, *min_ptr);
+            trocar(i, min_ptr);
+
+            /* Imprime estado atual apos a troca */
+            int *p = arr;
+            while (p < arr + n) {
+                printf("%d ", *p++);
+            }
+            printf("\n");
+        }
+    }
+}
+
+void exercicio12(void) {
+    printf("=== Exercicio 12: Selection Sort com Ponteiros ===\n");
+
+    int arr[8] = {64, 25, 12, 22, 11, 90, 3, 47};
+    int *p = arr;
+    int i;
+
+    printf("  Antes: ");
+    for (i = 0; i < 8; i++) printf("%d ", *(p + i));
+    printf("\n\n  Trocas durante a ordenacao:\n");
+
+    selectionSort(arr, 8);
+
+    printf("\n  Depois: ");
+    for (i = 0; i < 8; i++) printf("%d ", *(p + i));
+    printf("\n\n");
+}
+
+/* =========================================================
+ * MAIN
+ * ========================================================= */
+int main(void) {
+    printf("============================================================\n");
+    printf("  Semana 13 — Fundamentos de Ponteiros em Linguagem C\n");
+    printf("============================================================\n\n");
+
+    exercicio01();
+    exercicio02();
+    exercicio03();
+    exercicio04();
+    exercicio05();
+    exercicio06();
+    exercicio07();
+    exercicio08();
+    exercicio09();
+    exercicio10();
+    exercicio11();
+    exercicio12();
+
+    return 0;
+}
