@@ -3,23 +3,46 @@
  *  Disciplina: Programacao Estruturada e Modular               *
  *           Prof. Verissimo                                    *
  * -------------------------------------------------------------*
- *  Objetivo do Programa: Cabecalho do modulo de operacoes com  *
- *  strings — contagem de vogais, inversao in-place e deteccao  *
- *  de palindromo, sem string.h (exceto strlen)                 *
+ *  Objetivo do Programa: Testar o modulo de operacoes com      *
+ *  strings (contaVogais, inverteCString, ePalindromo) com ao   *
+ *  menos dois casos por funcao                                 *
+ *  Compilar com: gcc ex13.c ex13_stringutil.c -o ex13          *
  *  Data - 14/05/2026                                           *
  *  Autor: Leandro Lima Medeiros ; 2040482522013                *
  * -------------------------------------------------------------*/
 
-#ifndef STRINGUTIL_H
-#define STRINGUTIL_H
+#include <stdio.h>
+#include "ex13_stringutil.h"
 
-/* Conta vogais (maiusculas e minusculas) na string s */
-int contaVogais(char *s);
+int main(void) {
+    char s1[] = "Programacao";
+    char s2[] = "FATEC Ipiranga";
+    char s3[] = "arara";
+    char s4[] = "desenvolvimento";
+    char s5[] = "radar";
+    char s6[] = "OpenSource";
 
-/* Inverte a string s in-place */
-void inverteCString(char *s);
+    printf("=== Biblioteca de Operacoes com Strings ===\n\n");
 
-/* Retorna 1 se s for palindromo, 0 caso contrario */
-int ePalindromo(char *s);
+    /* --- contaVogais --- */
+    printf("-- contaVogais --\n");
+    printf("  \"%s\" -> %d vogal(is)\n", s1, contaVogais(s1));
+    printf("  \"%s\" -> %d vogal(is)\n", s2, contaVogais(s2));
 
-#endif /* STRINGUTIL_H */
+    /* --- inverteCString --- */
+    printf("\n-- inverteCString --\n");
+    printf("  Antes : \"%s\"", s3);
+    inverteCString(s3);
+    printf("  |  Depois: \"%s\"\n", s3);
+
+    printf("  Antes : \"%s\"", s4);
+    inverteCString(s4);
+    printf("  |  Depois: \"%s\"\n", s4);
+
+    /* --- ePalindromo --- */
+    printf("\n-- ePalindromo --\n");
+    printf("  \"%s\" -> %s\n", s5, ePalindromo(s5) ? "palindromo" : "nao e palindromo");
+    printf("  \"%s\" -> %s\n", s6, ePalindromo(s6) ? "palindromo" : "nao e palindromo");
+
+    return 0;
+}
