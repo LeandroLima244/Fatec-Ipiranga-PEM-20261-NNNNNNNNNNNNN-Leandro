@@ -3,46 +3,56 @@
  *  Disciplina: Programacao Estruturada e Modular               *
  *           Prof. Verissimo                                    *
  * -------------------------------------------------------------*
- *  Objetivo do Programa: Testar o modulo de operacoes com      *
- *  strings (contaVogais, inverteCString, ePalindromo) com ao   *
- *  menos dois casos por funcao                                 *
- *  Compilar com: gcc ex13.c ex13_stringutil.c -o ex13          *
+ *  Objetivo do Programa: Implementacao do modulo de operacoes  *
+ *  com strings — contagem de vogais, inversao in-place e       *
+ *  deteccao de palindromo, sem string.h (exceto strlen)        *
  *  Data - 14/05/2026                                           *
  *  Autor: Leandro Lima Medeiros ; 2040482522013                *
  * -------------------------------------------------------------*/
 
-#include <stdio.h>
+#include <string.h>   /* permitido: apenas strlen */
 #include "ex13_stringutil.h"
 
-int main(void) {
-    char s1[] = "Programacao";
-    char s2[] = "FATEC Ipiranga";
-    char s3[] = "arara";
-    char s4[] = "desenvolvimento";
-    char s5[] = "radar";
-    char s6[] = "OpenSource";
+/* Retorna 1 se o caractere c for vogal (mai. ou min.), 0 caso contrario */
+static int ehVogal(char c) {
+    return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' ||
+            c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
+}
 
-    printf("=== Biblioteca de Operacoes com Strings ===\n\n");
+/* contaVogais: percorre a string e conta cada vogal encontrada */
+int contaVogais(char *s) {
+    int count = 0;
+    while (*s != '\0') {
+        if (ehVogal(*s)) count++;
+        s++;
+    }
+    return count;
+}
 
-    /* --- contaVogais --- */
-    printf("-- contaVogais --\n");
-    printf("  \"%s\" -> %d vogal(is)\n", s1, contaVogais(s1));
-    printf("  \"%s\" -> %d vogal(is)\n", s2, contaVogais(s2));
+/* inverteCString: inverte a string in-place usando dois ponteiros
+   que se aproximam a partir das extremidades */
+void inverteCString(char *s) {
+    int n = (int)strlen(s);
+    int i = 0, j = n - 1;
+    char temp;
+    while (i < j) {
+        temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+        i++;
+        j--;
+    }
+}
 
-    /* --- inverteCString --- */
-    printf("\n-- inverteCString --\n");
-    printf("  Antes : \"%s\"", s3);
-    inverteCString(s3);
-    printf("  |  Depois: \"%s\"\n", s3);
-
-    printf("  Antes : \"%s\"", s4);
-    inverteCString(s4);
-    printf("  |  Depois: \"%s\"\n", s4);
-
-    /* --- ePalindromo --- */
-    printf("\n-- ePalindromo --\n");
-    printf("  \"%s\" -> %s\n", s5, ePalindromo(s5) ? "palindromo" : "nao e palindromo");
-    printf("  \"%s\" -> %s\n", s6, ePalindromo(s6) ? "palindromo" : "nao e palindromo");
-
-    return 0;
+/* ePalindromo: compara os caracteres das extremidades em direcao ao centro
+   Retorna 1 se forem todos iguais (palindromo), 0 caso contrario */
+int ePalindromo(char *s) {
+    int n = (int)strlen(s);
+    int i = 0, j = n - 1;
+    while (i < j) {
+        if (s[i] != s[j]) return 0;
+        i++;
+        j--;
+    }
+    return 1;
 }
